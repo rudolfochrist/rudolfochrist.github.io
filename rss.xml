@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Sebastian Christ</title>
+    <link>https://rudolfochrist.github.io</link>
+    <description>(funcall (λ ()))</description>
+    <pubDate>Fri, 27 Feb 2015 09:24:14 CET</pubDate>
+    <lastBuildDate>Fri, 27 Feb 2015 09:24:14 CET</lastBuildDate>
+    <docs>http://www.rssboard.org/rss-specification</docs>
+    <generator>Org-page static site generator (https://github.com/kelvinh/org-page)</generator>
+  </channel>
+</rss>
