@@ -1,0 +1,14 @@
+#+TITLE:       First Post
+#+AUTHOR:      Sebastian Christ
+#+EMAIL:       rudolfo.christ@gmail.com
+#+DATE:        2015-02-27 Fri
+#+URI:         /blog/%y/%m/%d/first-post
+#+LANGUAGE:    en
+#+OPTIONS:     H:3 num:nil toc:nil \n:nil ::t |:t ^:nil -:nil f:t *:t <:t
+#+DESCRIPTION: The first post
+
+So. This is it. A new first blog post. In fact, not the first time I'm writing this.
+After the years I should have created some kind of a /initial post template/ to ease
+some things.
+
+Perhaps I'm sticking to it this time...
