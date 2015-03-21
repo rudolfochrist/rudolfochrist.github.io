@@ -4,10 +4,17 @@
     <title>Sebastian Christ</title>
     <link>https://rudolfochrist.github.io</link>
     <description>(funcall (λ ()))</description>
-    <pubDate>Fri, 27 Feb 2015 14:21:45 CET</pubDate>
-    <lastBuildDate>Fri, 27 Feb 2015 14:21:45 CET</lastBuildDate>
+    <pubDate>Sat, 21 Mar 2015 12:17:03 CET</pubDate>
+    <lastBuildDate>Sat, 21 Mar 2015 12:17:03 CET</lastBuildDate>
     <docs>http://www.rssboard.org/rss-specification</docs>
     <generator>Org-page static site generator (https://github.com/kelvinh/org-page)</generator>
+    <item>
+      <title>Offlineimap with SSL files on OSX</title>
+      <link>https://rudolfochrist.github.io/blog/2015/03/21/offlineimap-with-ssl-files-on-osx</link>
+      <description>Set up offlineimap to use a SSL certfile on OSX</description>
+      <pubDate>2015-03-21</pubDate>
+      <guid>https://rudolfochrist.github.io/blog/2015/03/21/offlineimap-with-ssl-files-on-osx</guid>
+    </item>
     <item>
       <title>First Post</title>
       <link>https://rudolfochrist.github.io/blog/2015/02/27/first-post</link>

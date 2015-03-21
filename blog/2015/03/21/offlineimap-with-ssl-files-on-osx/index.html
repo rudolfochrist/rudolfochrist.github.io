@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>Offlineimap with SSL files on OSX - Sebastian Christ</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Sebastian Christ" />
+    <meta name="description" content="Set up offlineimap to use a SSL certfile on OSX" />
+    <meta name="keywords" content="offlineimap, emacs" />
+    <link rel="stylesheet" href="/media/css/main.css" type="text/css">
+    <link rel="stylesheet" href="/media/css/prettify.css" type="text/css">
+  </head>
+  <body class="container">
+    <div>
+      <header class="masthead">
+        <h1 class="masthead-title"><a href="/">Sebastian Christ</a></h1>
+        <p>(funcall (λ ()))</p>
+        <ul>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/tags/">Tags</a></li>
+          <li><a href="/about/">About</a></li>
+          <li><a href="https://github.com/rudolfochrist">GitHub</a></li>
+          <li><a href="/rss.xml">RSS</a></li>
+        </ul>
+        <form method="get" id="searchform" action="http://www.google.com/search">
+          <input type="text" class="field" name="q" id="s" placeholder="Search">
+          <input type="hidden" name="as_sitesearch" value="rudolfochrist.github.io">
+        </form>
+      </header>
+    </div>
+
+<div>
+<div class="post">
+<h1>Offlineimap with SSL files on OSX</h1>
+<p>
+You know that. Every morning you go to your beloved terminal emulator, type in
+</p>
+
+<pre class="example">
+$ offlineimap
+</pre>
+
+<p>
+to get some emails and <b>BANG</b>, you're presented with
+</p>
+
+<pre class="example">
+OfflineIMAP 6.5.5
+  Licensed under the GNU GPL v2+ (v2 or any later version)
+Account sync Gmail:
+ *** Processing account Gmail
+ Establishing connection to imap.gmail.com:993
+ ERROR: Server SSL fingerprint 'bfef6858bc803af948632c52241d15dd7696b4d2' for hostname 'imap.gmail.com' does not match configured fing
+erprint(s) ['606dab919155192b372ebeb390a773ce01c1d2d2'].  Please verify and set 'cert_fingerprint' accordingly if not set yet.
+ *** Finished account 'Gmail' in 0:00
+ERROR: Exceptions occurred during the run!
+ERROR: Server SSL fingerprint 'bfef6858bc803af948632c52241d15dd7696b4d2' for hostname 'imap.gmail.com' does not match configured finge
+rprint(s) ['606dab919155192b372ebeb390a773ce01c1d2d2'].  Please verify and set 'cert_fingerprint' accordingly if not set yet.
+
+Traceback:
+  File "/usr/local/Cellar/offline-imap/6.5.6/libexec/offlineimap/accounts.py", line 241, in syncrunner
+    self.__sync()
+  File "/usr/local/Cellar/offline-imap/6.5.6/libexec/offlineimap/accounts.py", line 303, in __sync
+    remoterepos.getfolders()
+  File "/usr/local/Cellar/offline-imap/6.5.6/libexec/offlineimap/repository/IMAP.py", line 322, in getfolders
+    imapobj = self.imapserver.acquireconnection()
+  File "/usr/local/Cellar/offline-imap/6.5.6/libexec/offlineimap/imapserver.py", line 409, in acquireconnection
+    fingerprint=fingerprint
+  File "/usr/local/Cellar/offline-imap/6.5.6/libexec/offlineimap/imaplibutil.py", line 148, in __init__
+    super(WrappedIMAP4_SSL, self).__init__(*args, **kwargs)
+  File "/usr/local/Cellar/offline-imap/6.5.6/libexec/offlineimap/imaplib2.py", line 2021, in __init__
+    IMAP4.__init__(self, host, port, debug, debug_file, identifier, timeout, debug_buf_lvl)
+  File "/usr/local/Cellar/offline-imap/6.5.6/libexec/offlineimap/imaplib2.py", line 333, in __init__
+    self.open(host, port)
+  File "/usr/local/Cellar/offline-imap/6.5.6/libexec/offlineimap/imaplibutil.py", line 165, in open
+    "if not set yet.", OfflineImapError.ERROR.REPO)
+</pre>
+
+<p>
+The certificate fingerprint has changed. Sorry, pal. You need to manually update the fingerprint in your <code>.offlineimaprc</code>
+if you'd like to proceed reading emails. <i>Bump</i>.
+</p>
+
+<p>
+Some massive research on that topic wasn't very fruitful, but ended as usually on <a href="https://stackoverflow.com/questions/24675167/ca-certificates-mac-os-x/28274272?noredirect=1">StackOverflow</a>. As it turns out, if you install <code>openssl</code> via homebrew<sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup> all certificates installed in your Keychain are exported to <code>/usr/local/etc/openssl/cert.pem</code> <sup><a id="fnr.2" name="fnr.2" class="footref" href="#fn.2">2</a></sup>.
+</p>
+
+<p>
+You can take that cert file and use it along with your <code>.offlineimaprc</code>:
+</p>
+
+<pre class="example">
+ssl=true
+sslcacertfile = /usr/local/etc/openssl/cert.pem
+</pre>
+
+<p>
+Presto. There is no need of adding, or replacing, changed fingerprints anymore. Happy email-reading!
+</p>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p class="footpara">
+<code>$ brew install openssl</code>
+</p></div>
+
+<div class="footdef"><sup><a id="fn.2" name="fn.2" class="footnum" href="#fnr.2">2</a></sup> <p class="footpara">
+See the <code>post_install</code> hook of the <a href="https://github.com/Homebrew/homebrew/blob/master/Library/Formula/openssl.rb#L106">openssl formulae</a>
+</p></div>
+
+
+</div>
+</div>
+</div>
+</div>
+    <div>
+      <div class="post-meta">
+        <span title="post date" class="post-info">2015-03-21</span>
+        <span title="last modification date" class="post-info">2015-03-21</span>
+        <span title="tags" class="post-info"><a href="/tags/offlineimap/">offlineimap</a> <a href="/tags/emacs/">emacs</a></span>
+        <span title="author" class="post-info">Sebastian Christ</span>
+      </div>
+      <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+      <script src="https://google-code-prettify.googlecode.com/svn/loader/prettify.js"></script>
+      <script src="/media/js/main.js"></script>
+      <div class="footer">
+        <p>Generated by <a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.x (<a href="http://orgmode.org">Org mode</a> 8.x)</p>
+        <p>
+          Copyright &copy; 2012 - <span id="footerYear"></span> <a href="mailto:rudolfo &lt;dot&gt; christ &lt;at&gt; gmail &lt;dot&gt; com">Sebastian Christ</a>
+          &nbsp;&nbsp;-&nbsp;&nbsp;
+          Powered by <a href="https://github.com/kelvinh/org-page" target="_blank">org-page</a>
+          <script type="text/javascript">document.getElementById("footerYear").innerHTML = (new Date()).getFullYear();</script>
+        </p>
+      </div>
+    </div>
+
+  </body>
+</html>
