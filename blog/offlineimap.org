@@ -1,0 +1,70 @@
+#+TITLE:       Offlineimap with SSL files on OSX
+#+AUTHOR:      Sebastian Christ
+#+EMAIL:       rudolfo.christ@gmail.com
+#+DATE:        2015-03-21 Sat
+#+URI:         /blog/%y/%m/%d/offlineimap-with-ssl-files-on-osx
+#+KEYWORDS:    offlineimap, emacs
+#+TAGS:        offlineimap, emacs
+#+LANGUAGE:    en
+#+OPTIONS:     H:3 num:nil toc:nil \n:nil ::t |:t ^:nil -:nil f:t *:t <:t
+#+DESCRIPTION: Set up offlineimap to use a SSL certfile on OSX
+
+You know that. Every morning you go to your beloved terminal emulator, type in
+
+#+BEGIN_EXAMPLE
+$ offlineimap
+#+END_EXAMPLE
+
+to get some emails and *BANG*, you're presented with
+
+#+BEGIN_EXAMPLE
+OfflineIMAP 6.5.5
+  Licensed under the GNU GPL v2+ (v2 or any later version)
+Account sync Gmail:
+ *** Processing account Gmail
+ Establishing connection to imap.gmail.com:993
+ ERROR: Server SSL fingerprint 'bfef6858bc803af948632c52241d15dd7696b4d2' for hostname 'imap.gmail.com' does not match configured fing
+erprint(s) ['606dab919155192b372ebeb390a773ce01c1d2d2'].  Please verify and set 'cert_fingerprint' accordingly if not set yet.
+ *** Finished account 'Gmail' in 0:00
+ERROR: Exceptions occurred during the run!
+ERROR: Server SSL fingerprint 'bfef6858bc803af948632c52241d15dd7696b4d2' for hostname 'imap.gmail.com' does not match configured finge
+rprint(s) ['606dab919155192b372ebeb390a773ce01c1d2d2'].  Please verify and set 'cert_fingerprint' accordingly if not set yet.
+
+Traceback:
+  File "/usr/local/Cellar/offline-imap/6.5.6/libexec/offlineimap/accounts.py", line 241, in syncrunner
+    self.__sync()
+  File "/usr/local/Cellar/offline-imap/6.5.6/libexec/offlineimap/accounts.py", line 303, in __sync
+    remoterepos.getfolders()
+  File "/usr/local/Cellar/offline-imap/6.5.6/libexec/offlineimap/repository/IMAP.py", line 322, in getfolders
+    imapobj = self.imapserver.acquireconnection()
+  File "/usr/local/Cellar/offline-imap/6.5.6/libexec/offlineimap/imapserver.py", line 409, in acquireconnection
+    fingerprint=fingerprint
+  File "/usr/local/Cellar/offline-imap/6.5.6/libexec/offlineimap/imaplibutil.py", line 148, in __init__
+    super(WrappedIMAP4_SSL, self).__init__(*args, **kwargs)
+  File "/usr/local/Cellar/offline-imap/6.5.6/libexec/offlineimap/imaplib2.py", line 2021, in __init__
+    IMAP4.__init__(self, host, port, debug, debug_file, identifier, timeout, debug_buf_lvl)
+  File "/usr/local/Cellar/offline-imap/6.5.6/libexec/offlineimap/imaplib2.py", line 333, in __init__
+    self.open(host, port)
+  File "/usr/local/Cellar/offline-imap/6.5.6/libexec/offlineimap/imaplibutil.py", line 165, in open
+    "if not set yet.", OfflineImapError.ERROR.REPO)
+#+END_EXAMPLE
+
+The certificate fingerprint has changed. Sorry, pal. You need to manually update the fingerprint in you =.offlineimaprc=
+if you'd like to proceed reading emails. /Bump/.
+
+Some massive research on that topic wasn't very fruitful, but ended as usually on [[https://stackoverflow.com/questions/24675167/ca-certificates-mac-os-x/28274272?noredirect%3D1][StackOverflow]]. As it turns out, if you install =openssl= via homebrew[fn:1] all certificates installed in your Keychain are exported to =/usr/local/etc/openssl/cert.pem= [fn:2].
+
+You can take that cert file and use it along with your =.offlineimaprc=:
+
+#+BEGIN_EXAMPLE
+ssl=true
+sslcacertfile = /usr/local/etc/openssl/cert.pem
+#+END_EXAMPLE
+
+Presto. There is no need of adding, or replacing, changed fingerprints anymore. Happy email-reading!
+
+* Footnotes
+
+[fn:1] ~$ brew install openssl~
+
+[fn:2] See the ~post_install~ hook of the [[https://github.com/Homebrew/homebrew/blob/master/Library/Formula/openssl.rb#L106][openssl formulae]]
