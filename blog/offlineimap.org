@@ -49,7 +49,7 @@ Traceback:
     "if not set yet.", OfflineImapError.ERROR.REPO)
 #+END_EXAMPLE
 
-The certificate fingerprint has changed. Sorry, pal. You need to manually update the fingerprint in you =.offlineimaprc=
+The certificate fingerprint has changed. Sorry, pal. You need to manually update the fingerprint in your =.offlineimaprc=
 if you'd like to proceed reading emails. /Bump/.
 
 Some massive research on that topic wasn't very fruitful, but ended as usually on [[https://stackoverflow.com/questions/24675167/ca-certificates-mac-os-x/28274272?noredirect%3D1][StackOverflow]]. As it turns out, if you install =openssl= via homebrew[fn:1] all certificates installed in your Keychain are exported to =/usr/local/etc/openssl/cert.pem= [fn:2].
