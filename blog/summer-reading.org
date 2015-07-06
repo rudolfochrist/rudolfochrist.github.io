@@ -1,0 +1,12 @@
+#+TITLE:       Summer Reading...
+#+AUTHOR:      Sebastian Christ
+#+EMAIL:       rudolfo.christ@gmail.com
+#+DATE:        2015-07-06 Mon
+#+URI:         /blog/%y/%m/%d/summer-reading
+#+KEYWORDS:    lisp, book, reading
+#+TAGS:        lisp, book, reading
+#+LANGUAGE:    en
+#+OPTIONS:     H:3 num:nil toc:nil \n:nil ::t |:t ^:nil -:nil f:t *:t <:t
+
+#+attr_html: :alt summer reading stack :title summer reading stack :width 700px
+[[file:images/lisp-summer-reading.jpg]]
