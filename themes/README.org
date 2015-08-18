@@ -1,0 +1,10 @@
+#+TITLE: README
+#+DATE: <2015-08-17 Mon>
+#+AUTHOR: Sebastian Christ
+
+My customizations to the default [[https://github.com/kelvinh/org-page][org-page]] theme.
+
+** Changes
+
+1. Don't syntax highlight
+2. Make ~<code>~ and ~<pre>~ block scroll on overflow.
