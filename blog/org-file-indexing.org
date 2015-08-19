@@ -1,0 +1,233 @@
+#+TITLE:       On indexing org files
+#+AUTHOR:      Sebastian Christ
+#+EMAIL:       rudolfo.christ@gmail.com
+#+DATE:        [2015-08-19 Wed]
+#+URI:         /blog/%y/%m/%d/on-indexing-org-files
+#+TAGS:        emacs, search, lisp
+#+KEYWORDS:    emacs, search, lisp
+#+LANGUAGE:    en
+#+OPTIONS:     H:3 num:nil toc:nil \n:nil ::t |:t ^:nil -:nil f:t *:t <:t
+
+Since indexing org file is kind of /en vogue/ lately, I thought that I should present my own home-brewed
+solution. Firstly, I tried to use [[http://oremacs.com/2015/07/27/counsel-recoll/][recoll]], but unfortunately I was unable to compile it on OSX. Because I store
+all of my notes in one huge org file, [[http://www.manpagez.com/man/1/mdfind/][~mdfind~]] wasn't a solution ether. [[http://kitchingroup.cheme.cmu.edu/blog/2015/07/06/Indexing-headlines-in-org-files-with-swish-e-with-laser-sharp-results/][John Kitchin]] gave a lot of
+inspiration, but somehow it didn't quite fit. So I had to hack something by myself...
+
+* The indexer
+
+Because I think an all Lisp implementation is /sort-of/ cool, I decided to write my indexer in Common Lisp
+utilizing the Common Lisp [[https://lucene.apache.org/][Lucene]] implementation majestically called [[http://www.cliki.net/Montezuma][Montezuma]].
+
+#+BEGIN_SRC lisp
+(defpackage :index-cli
+  (:use :cl :net.didierverna.clon)
+  (:import-from :montezuma
+                :add-field
+                :make-field)
+  (:export
+   #:main))
+
+(in-package :index-cli)
+
+(defvar *version* "0.1")
+(defvar *index-path-name* ".org-file-index")
+(defparameter *index-path* (merge-pathnames *index-path-name*))
+
+(defun make-index (&key create-p)
+  (make-instance 'montezuma:index
+                 :path *index-path*
+                 :create-p create-p
+                 :analyzer (make-instance 'montezuma:standard-analyzer)
+                 :default-field "*"))
+
+(defun search-index (query)
+  (let ((index (make-index :create-p nil)))
+    (when (= 0 (montezuma:search-each
+                index
+                query
+                #'(lambda (doc-id score)
+                    (declare (ignore score))
+                    (format t "~A [~A|~A]~%"
+                            (montezuma:document-value
+                             (montezuma:get-document index doc-id)
+                             'title)
+                            (montezuma:document-value
+                             (montezuma:get-document index doc-id)
+                             'file)
+                            (montezuma:document-value
+                             (montezuma:get-document index doc-id)
+                             'buffer-position)))
+                '(:num-docs 100000)))
+      (format t "Not found~%"))))
+
+(defun index-file (filespec)
+  (let ((all-docs (with-open-file (f filespec)
+                    (read f)))
+        (index (make-index :create-p t)))
+    (dolist (doc all-docs)
+    (montezuma:add-document-to-index index doc
+       (make-instance 'montezuma:standard-analyzer)))
+    (montezuma:optimize index)
+    (montezuma:close index)))
+
+;;; CLI
+
+(defsynopsis (:postfix "FILE")
+  (text :contents "Index alist file")
+  (path :long-name "index-path" :short-name "i" :type :directory
+        :description "Index location. Defaults to current directory.")
+  (stropt :long-name "query" :short-name "q"
+          :description "Search terms.")
+  (flag :long-name "help" :short-name "h"
+        :description "Show this help text.")
+  (flag :long-name "version" :short-name "v"
+        :description "Show the version."))
+
+(defun main (args)
+  (setf sb-impl::*default-external-format* :utf-8)
+  (make-context :cmdline args)
+  (when (getopt :short-name "h")
+    (help)
+    (sb-ext:exit))
+  (when (getopt :short-name "v")
+    (format t "index-cli v~A~%" *version*)
+    (sb-ext:exit))
+  (let ((index-path (getopt :short-name "i"))
+        (query (getopt :short-name "q")))
+    (when index-path
+      (setf *index-path* (merge-pathnames *index-path-name* index-path)))
+    (if query
+        (search-index query)
+        (index-file (merge-pathnames (car (remainder)))))))
+
+#+END_SRC
+
+The most important points are the ~index-file~ and the ~search-index~ functions. The file passed to
+~index-file~ should contain a list of alist. It iterates over this list and passes each alist to
+Montezuma. Simple as that. The alists contains the following data:
+
+- *title* :: Usually the org headline.
+- *contents* :: A paragraph's text. Meaning the text in between two org headlines.
+- *file* :: The absolute file path to the file where *title* or *contents* has been extracted.
+- *buffer-position* :: The position of the headline or paragraph in the buffer. Knowing that, it is easy to
+     jump directly to the occurrence of the search term. This will be important later.
+
+Example:
+
+#+BEGIN_SRC lisp
+((title . "An awesome title")
+ (contents . "Much much content...")
+ (file . "/Users/lispm/org/kb.org")
+ (buffer-position . 311518))
+#+END_SRC
+
+Each alist is a document in Lucene/Montezuma lingo. Note that *contents* is optional actually. This is because
+I'm indexing headlines and paragraphs independently. But when I index a paragraph I put it's parent-headline
+into the document as well. Admittedly this indexes the same headline multiple times which is
+unnecessary actually, but I'm fine with that.
+
+The ~search-index~ function applies the given query to the index an is explained quickly. If documents for
+this query are found, each document gets printed to *standard-output*. For example, querying for =awesome title= writes
+the above document like the following:
+
+#+BEGIN_EXAMPLE
+An awesome title [/Users/lispm/org/kb.org|311518]
+#+END_EXAMPLE
+
+This output format still applies if the search term has been found inside the *contents* of a document. Thus
+I've indexed the headline for paragraphs as well. To finalize the indexer, I've created an  executable with [[http://www.xach.com/lisp/buildapp/][buildapp]]
+and gave it a primitive CLI. The *-i* option
+tells it where the index should be stored. The *-q* option searches the index. Omitting *-q* and passing the
+documents file (the list of alists) indexes it.
+
+* The documents creator
+
+
+Next I needed a script that transforms my org file into a list of indexable documents.
+
+#+BEGIN_SRC emacs-lisp
+
+;;; use the latest org
+(add-to-list 'load-path "/Users/fyi/.emacs.d/elpa/org-20150727/")
+(require 'org)
+(require 'xml)
+(require 'json)
+
+(defun parent-headline (element)
+  (let ((parent (org-element-property :parent element)))
+    (cond
+      ((null parent)
+       "")
+      ((and (eq 'headline (org-element-type parent))
+            (eql 1 (org-element-property :level parent)))
+       (org-element-property :raw-value parent))
+      (t
+       (parent-headline parent)))))
+
+(find-file (expand-file-name (car command-line-args-left)))
+
+(princ (append
+        (org-map-entries
+         (lambda ()
+           (let* ((headline (org-element-at-point))
+                  (title (org-element-property :title headline)))
+             (if (equal title "Website Summary:")
+                 ""
+                 (format "((title . %S) (file . %S) (buffer-position . %s))"
+                         title
+                         (buffer-file-name)
+                         (prin1-to-string
+                          (org-element-property :begin headline)))))))
+        (org-element-map (org-element-parse-buffer) 'paragraph
+          (lambda (paragraph)
+            (format
+             "((title . %S) (contents . %S) (file . %S) (buffer-position . %s))"
+             (parent-headline paragraph)
+             (xml-escape-string
+              (buffer-substring-no-properties
+               (org-element-property :contents-begin paragraph)
+               (org-element-property :contents-end paragraph)))
+             (buffer-file-name)
+             (prin1-to-string (org-element-property :begin paragraph)))))))
+
+#+END_SRC
+
+The above script takes an org file and maps over each headline and paragraph an produces an alist
+accordingly. Nothing special about it. I didn't know about the ~org-element~-API before, which is quite nice.
+
+* Swiper integration
+
+Lastly, everything get swiper-integrated to be usable from inside Emacs.
+
+#+BEGIN_SRC emacs-lisp
+(defun counsel-kb-search-function (string &rest unused)
+  "Lookup STRING with index-cli"
+  (if (< (length string) 3)
+      (counsel-more-chars 3)
+      (counsel--async-command
+       (format "index-cli -i /Users/lispm/org -q \"%s\"" string))
+      nil))
+
+(defun search-kb (&optional initial-input)
+  "Search KB"
+  (interactive)
+  (ivy-read "search KB: " 'counsel-kb-search-function
+            :initial-input initial-input
+            :dynamic-collection t
+            :history 'counsel-git-grep-history
+            :action
+            (lambda (x)
+              (when (string-match ".*\\[\\(.*\\)|\\([[:digit:]]+\\)\\]" x)
+                (let ((file-name (match-string 1 x))
+                      (point (string-to-number (match-string 2 x))))
+                  (find-file file-name)
+                  (goto-char point)
+                  (org-show-entry)
+                  (show-children))))))
+#+END_SRC
+
+The regexp matches the output of the indexer. Because I've indexed the file path and the buffer position I can jump
+directly to the search term from swiper. Which is exactly what I wanted.  See a demo below:
+
+#+attr_html: :alt index-cli demo :title index-cli demo :width 700px
+[[file:images/index-cli-demo.gif]]
