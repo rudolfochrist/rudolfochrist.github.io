@@ -1,0 +1,12 @@
+#+TITLE:       On trying something new
+#+AUTHOR:      Sebastian Christ
+#+EMAIL:       rudolfo.christ@gmail.com
+#+DATE:        2015-09-07 Mon
+#+URI:         /blog/%y/%m/%d/on-trying-something-new
+#+KEYWORDS:    lisp, c64, retro
+#+TAGS:        lisp, c64
+#+LANGUAGE:    en
+#+OPTIONS:     H:3 num:nil toc:nil \n:nil ::t |:t ^:nil -:nil f:t *:t <:t
+
+#+attr_html: :alt Micro-Lisp 2.5 screenshot :title Micro-Lisp 2.5 :width 700px
+[[file:images/VICE__C64_emulator.png]]
