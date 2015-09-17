@@ -47,35 +47,35 @@ utilizing the Common Lisp <a href="https://lucene.apache.org/">Lucene</a> implem
 
 <div class="org-src-container">
 
-<pre class="src src-lisp">(<span style="font-weight: bold;">defpackage</span> :index-cli
-  (<span style="font-weight: bold;">:use</span> <span style="font-weight: bold;">:cl</span> <span style="font-weight: bold;">:net.didierverna.clon</span>)
-  (<span style="font-weight: bold;">:import-from</span> <span style="font-weight: bold;">:montezuma</span>
-                <span style="font-weight: bold;">:add-field</span>
-                <span style="font-weight: bold;">:make-field</span>)
-  (<span style="font-weight: bold;">:export</span>
-   #<span style="font-weight: bold;">:main</span>))
+<pre class="src src-lisp">(defpackage :index-cli
+  (:use :cl :net.didierverna.clon)
+  (:import-from :montezuma
+                :add-field
+                :make-field)
+  (:export
+   #:main))
 
-(<span style="font-weight: bold;">in-package</span> <span style="font-weight: bold;">:index-cli</span>)
+(in-package :index-cli)
 
-(<span style="font-weight: bold;">defvar</span> *version* <span style="font-style: italic;">"0.1"</span>)
-(<span style="font-weight: bold;">defvar</span> *index-path-name* <span style="font-style: italic;">".org-file-index"</span>)
-(<span style="font-weight: bold;">defparameter</span> *index-path* (merge-pathnames *index-path-name*))
+(defvar *version* "0.1")
+(defvar *index-path-name* ".org-file-index")
+(defparameter *index-path* (merge-pathnames *index-path-name*))
 
-(<span style="font-weight: bold;">defun</span> <span style="font-weight: bold;">make-index</span> (&amp;key create-p)
+(defun make-index (&amp;key create-p)
   (make-instance 'montezuma:index
-                 <span style="font-weight: bold;">:path</span> *index-path*
-                 <span style="font-weight: bold;">:create-p</span> create-p
-                 <span style="font-weight: bold;">:analyzer</span> (make-instance 'montezuma:standard-analyzer)
-                 <span style="font-weight: bold;">:default-field</span> <span style="font-style: italic;">"*"</span>))
+                 :path *index-path*
+                 :create-p create-p
+                 :analyzer (make-instance 'montezuma:standard-analyzer)
+                 :default-field "*"))
 
-(<span style="font-weight: bold;">defun</span> <span style="font-weight: bold;">search-index</span> (query)
-  (<span style="font-weight: bold;">let</span> ((index (make-index <span style="font-weight: bold;">:create-p</span> nil)))
-    (<span style="font-weight: bold;">when</span> (= 0 (montezuma:search-each
+(defun search-index (query)
+  (let ((index (make-index :create-p nil)))
+    (when (= 0 (montezuma:search-each
                 index
                 query
-                #'(<span style="font-weight: bold;">lambda</span> (doc-id score)
-                    (<span style="font-weight: bold;">declare</span> (ignore score))
-                    (format t <span style="font-style: italic;">"~A [~A|~A]~%"</span>
+                #'(lambda (doc-id score)
+                    (declare (ignore score))
+                    (format t "~A [~A|~A]~%"
                             (montezuma:document-value
                              (montezuma:get-document index doc-id)
                              'title)
@@ -85,46 +85,46 @@ utilizing the Common Lisp <a href="https://lucene.apache.org/">Lucene</a> implem
                             (montezuma:document-value
                              (montezuma:get-document index doc-id)
                              'buffer-position)))
-                '(<span style="font-weight: bold;">:num-docs</span> 100000)))
-      (format t <span style="font-style: italic;">"Not found~%"</span>))))
+                '(:num-docs 100000)))
+      (format t "Not found~%"))))
 
-(<span style="font-weight: bold;">defun</span> <span style="font-weight: bold;">index-file</span> (filespec)
-  (<span style="font-weight: bold;">let</span> ((all-docs (<span style="font-weight: bold;">with-open-file</span> (f filespec)
+(defun index-file (filespec)
+  (let ((all-docs (with-open-file (f filespec)
                     (read f)))
-        (index (make-index <span style="font-weight: bold;">:create-p</span> t)))
-    (<span style="font-weight: bold;">dolist</span> (doc all-docs)
+        (index (make-index :create-p t)))
+    (dolist (doc all-docs)
     (montezuma:add-document-to-index index doc
        (make-instance 'montezuma:standard-analyzer)))
     (montezuma:optimize index)
     (montezuma:close index)))
 
-<span style="color: #585858;">;;; </span><span style="color: #585858;">CLI</span>
+;;; CLI
 
-(defsynopsis (<span style="font-weight: bold;">:postfix</span> <span style="font-style: italic;">"FILE"</span>)
-  (text <span style="font-weight: bold;">:contents</span> <span style="font-style: italic;">"Index alist file"</span>)
-  (path <span style="font-weight: bold;">:long-name</span> <span style="font-style: italic;">"index-path"</span> <span style="font-weight: bold;">:short-name</span> <span style="font-style: italic;">"i"</span> <span style="font-weight: bold;">:type</span> <span style="font-weight: bold;">:directory</span>
-        <span style="font-weight: bold;">:description</span> <span style="font-style: italic;">"Index location. Defaults to current directory."</span>)
-  (stropt <span style="font-weight: bold;">:long-name</span> <span style="font-style: italic;">"query"</span> <span style="font-weight: bold;">:short-name</span> <span style="font-style: italic;">"q"</span>
-          <span style="font-weight: bold;">:description</span> <span style="font-style: italic;">"Search terms."</span>)
-  (flag <span style="font-weight: bold;">:long-name</span> <span style="font-style: italic;">"help"</span> <span style="font-weight: bold;">:short-name</span> <span style="font-style: italic;">"h"</span>
-        <span style="font-weight: bold;">:description</span> <span style="font-style: italic;">"Show this help text."</span>)
-  (flag <span style="font-weight: bold;">:long-name</span> <span style="font-style: italic;">"version"</span> <span style="font-weight: bold;">:short-name</span> <span style="font-style: italic;">"v"</span>
-        <span style="font-weight: bold;">:description</span> <span style="font-style: italic;">"Show the version."</span>))
+(defsynopsis (:postfix "FILE")
+  (text :contents "Index alist file")
+  (path :long-name "index-path" :short-name "i" :type :directory
+        :description "Index location. Defaults to current directory.")
+  (stropt :long-name "query" :short-name "q"
+          :description "Search terms.")
+  (flag :long-name "help" :short-name "h"
+        :description "Show this help text.")
+  (flag :long-name "version" :short-name "v"
+        :description "Show the version."))
 
-(<span style="font-weight: bold;">defun</span> <span style="font-weight: bold;">main</span> (args)
-  (setf sb-impl::*default-external-format* <span style="font-weight: bold;">:utf-8</span>)
-  (make-context <span style="font-weight: bold;">:cmdline</span> args)
-  (<span style="font-weight: bold;">when</span> (getopt <span style="font-weight: bold;">:short-name</span> <span style="font-style: italic;">"h"</span>)
+(defun main (args)
+  (setf sb-impl::*default-external-format* :utf-8)
+  (make-context :cmdline args)
+  (when (getopt :short-name "h")
     (help)
     (sb-ext:exit))
-  (<span style="font-weight: bold;">when</span> (getopt <span style="font-weight: bold;">:short-name</span> <span style="font-style: italic;">"v"</span>)
-    (format t <span style="font-style: italic;">"index-cli v~A~%"</span> *version*)
+  (when (getopt :short-name "v")
+    (format t "index-cli v~A~%" *version*)
     (sb-ext:exit))
-  (<span style="font-weight: bold;">let</span> ((index-path (getopt <span style="font-weight: bold;">:short-name</span> <span style="font-style: italic;">"i"</span>))
-        (query (getopt <span style="font-weight: bold;">:short-name</span> <span style="font-style: italic;">"q"</span>)))
-    (<span style="font-weight: bold;">when</span> index-path
+  (let ((index-path (getopt :short-name "i"))
+        (query (getopt :short-name "q")))
+    (when index-path
       (setf *index-path* (merge-pathnames *index-path-name* index-path)))
-    (<span style="font-weight: bold;">if</span> query
+    (if query
         (search-index query)
         (index-file (merge-pathnames (car (remainder)))))))
 </pre>
@@ -150,9 +150,9 @@ Example:
 
 <div class="org-src-container">
 
-<pre class="src src-lisp">((title . <span style="font-style: italic;">"An awesome title"</span>)
- (contents . <span style="font-style: italic;">"Much much content..."</span>)
- (file . <span style="font-style: italic;">"/Users/lispm/org/kb.org"</span>)
+<pre class="src src-lisp">((title . "An awesome title")
+ (contents . "Much much content...")
+ (file . "/Users/lispm/org/kb.org")
  (buffer-position . 311518))
 </pre>
 </div>
@@ -193,20 +193,20 @@ Next I needed a script that transforms my org file into a list of indexable docu
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp"><span style="color: #585858;">;;; </span><span style="color: #585858;">use the latest org</span>
-(add-to-list 'load-path <span style="font-style: italic;">"/Users/fyi/.emacs.d/elpa/org-20150727/"</span>)
-(<span style="font-weight: bold;">require</span> 'org)
-(<span style="font-weight: bold;">require</span> 'xml)
-(<span style="font-weight: bold;">require</span> 'json)
+<pre class="src src-emacs-lisp">;;; use the latest org
+(add-to-list 'load-path "/Users/fyi/.emacs.d/elpa/org-20150727/")
+(require 'org)
+(require 'xml)
+(require 'json)
 
-(<span style="font-weight: bold;">defun</span> <span style="font-weight: bold;">parent-headline</span> (element)
-  (<span style="font-weight: bold;">let</span> ((parent (org-element-property <span style="font-weight: bold;">:parent</span> element)))
-    (<span style="font-weight: bold;">cond</span>
+(defun parent-headline (element)
+  (let ((parent (org-element-property :parent element)))
+    (cond
       ((null parent)
-       <span style="font-style: italic;">""</span>)
+       "")
       ((and (eq 'headline (org-element-type parent))
-            (eql 1 (org-element-property <span style="font-weight: bold;">:level</span> parent)))
-       (org-element-property <span style="font-weight: bold;">:raw-value</span> parent))
+            (eql 1 (org-element-property :level parent)))
+       (org-element-property :raw-value parent))
       (t
        (parent-headline parent)))))
 
@@ -214,27 +214,27 @@ Next I needed a script that transforms my org file into a list of indexable docu
 
 (princ (append
         (org-map-entries
-         (<span style="font-weight: bold;">lambda</span> ()
-           (<span style="font-weight: bold;">let*</span> ((headline (org-element-at-point))
-                  (title (org-element-property <span style="font-weight: bold;">:title</span> headline)))
-             (<span style="font-weight: bold;">if</span> (equal title <span style="font-style: italic;">"Website Summary:"</span>)
-                 <span style="font-style: italic;">""</span>
-                 (format <span style="font-style: italic;">"((title . %S) (file . %S) (buffer-position . %s))"</span>
+         (lambda ()
+           (let* ((headline (org-element-at-point))
+                  (title (org-element-property :title headline)))
+             (if (equal title "Website Summary:")
+                 ""
+                 (format "((title . %S) (file . %S) (buffer-position . %s))"
                          title
                          (buffer-file-name)
                          (prin1-to-string
-                          (org-element-property <span style="font-weight: bold;">:begin</span> headline)))))))
+                          (org-element-property :begin headline)))))))
         (org-element-map (org-element-parse-buffer) 'paragraph
-          (<span style="font-weight: bold;">lambda</span> (paragraph)
+          (lambda (paragraph)
             (format
-             <span style="font-style: italic;">"((title . %S) (contents . %S) (file . %S) (buffer-position . %s))"</span>
+             "((title . %S) (contents . %S) (file . %S) (buffer-position . %s))"
              (parent-headline paragraph)
              (xml-escape-string
               (buffer-substring-no-properties
-               (org-element-property <span style="font-weight: bold;">:contents-begin</span> paragraph)
-               (org-element-property <span style="font-weight: bold;">:contents-end</span> paragraph)))
+               (org-element-property :contents-begin paragraph)
+               (org-element-property :contents-end paragraph)))
              (buffer-file-name)
-             (prin1-to-string (org-element-property <span style="font-weight: bold;">:begin</span> paragraph)))))))
+             (prin1-to-string (org-element-property :begin paragraph)))))))
 </pre>
 </div>
 
@@ -254,25 +254,25 @@ Lastly, everything get swiper-integrated to be usable from inside Emacs.
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">(<span style="font-weight: bold;">defun</span> <span style="font-weight: bold;">counsel-kb-search-function</span> (string &amp;rest unused)
-  <span style="font-style: italic;">"Lookup STRING with index-cli"</span>
-  (<span style="font-weight: bold;">if</span> (&lt; (length string) 3)
+<pre class="src src-emacs-lisp">(defun counsel-kb-search-function (string &amp;rest unused)
+  "Lookup STRING with index-cli"
+  (if (&lt; (length string) 3)
       (counsel-more-chars 3)
       (counsel--async-command
-       (format <span style="font-style: italic;">"index-cli -i /Users/lispm/org -q \"%s\""</span> string))
+       (format "index-cli -i /Users/lispm/org -q \"%s\"" string))
       nil))
 
-(<span style="font-weight: bold;">defun</span> <span style="font-weight: bold;">search-kb</span> (&amp;optional initial-input)
-  <span style="font-style: italic;">"Search KB"</span>
+(defun search-kb (&amp;optional initial-input)
+  "Search KB"
   (interactive)
-  (ivy-read <span style="font-style: italic;">"search KB: "</span> 'counsel-kb-search-function
-            <span style="font-weight: bold;">:initial-input</span> initial-input
-            <span style="font-weight: bold;">:dynamic-collection</span> t
-            <span style="font-weight: bold;">:history</span> 'counsel-git-grep-history
-            <span style="font-weight: bold;">:action</span>
-            (<span style="font-weight: bold;">lambda</span> (x)
-              (<span style="font-weight: bold;">when</span> (string-match <span style="font-style: italic;">".*\\[</span><span style="font-style: italic;">\\</span><span style="font-style: italic;">(</span><span style="font-style: italic;">.*</span><span style="font-style: italic;">\\</span><span style="font-style: italic;">)</span><span style="font-style: italic;">|</span><span style="font-style: italic;">\\</span><span style="font-style: italic;">(</span><span style="font-style: italic;">[[:digit:]]+</span><span style="font-style: italic;">\\</span><span style="font-style: italic;">)</span><span style="font-style: italic;">\\]"</span> x)
-                (<span style="font-weight: bold;">let</span> ((file-name (match-string 1 x))
+  (ivy-read "search KB: " 'counsel-kb-search-function
+            :initial-input initial-input
+            :dynamic-collection t
+            :history 'counsel-git-grep-history
+            :action
+            (lambda (x)
+              (when (string-match ".*\\[\\(.*\\)|\\([[:digit:]]+\\)\\]" x)
+                (let ((file-name (match-string 1 x))
                       (point (string-to-number (match-string 2 x))))
                   (find-file file-name)
                   (goto-char point)
@@ -300,7 +300,7 @@ directly to the search term from swiper. Which is exactly what I wanted.  See a 
       <div class="post-meta">
         <span title="post date" class="post-info">2015-08-19</span>
         <span title="last modification date" class="post-info">2015-08-19</span>
-        <span title="tags" class="post-info"><a href="/tags/emacs/">emacs</a> <a href="/tags/search/">search</a> <a href="/tags/lisp/">lisp</a></span>
+        <span title="tags" class="post-info"><a href="/tags/emacs/">emacs</a>, <a href="/tags/search/">search</a>, <a href="/tags/lisp/">lisp</a></span>
         <span title="author" class="post-info">Sebastian Christ</span>
       </div>
       <script src="http://code.jquery.com/jquery-latest.min.js"></script>
