@@ -1,8 +1,0 @@
-#+title: About
-#+options: toc:nil
-
-I'm a programmer based in Worms (Germany) and this is the place
-where I write if I got something meaningful to say about software
-development, mostly the Lisp way, and my own philosophical considerations.
-
-Enjoy and feel free to drop me a line, if you'd like to.
