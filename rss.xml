@@ -4,8 +4,8 @@
     <title>Sebastian Christ</title>
     <link>https://rudolfochrist.github.io</link>
     <description>(funcall (λ ()))</description>
-    <pubDate>Thu, 17 Sep 2015 16:49:27 CEST</pubDate>
-    <lastBuildDate>Thu, 17 Sep 2015 16:49:27 CEST</lastBuildDate>
+    <pubDate>Thu, 17 Sep 2015 17:17:06 CEST</pubDate>
+    <lastBuildDate>Thu, 17 Sep 2015 17:17:06 CEST</lastBuildDate>
     <docs>http://www.rssboard.org/rss-specification</docs>
     <generator>Org-page static site generator (https://github.com/kelvinh/org-page)</generator>
     <item>
@@ -21,13 +21,6 @@
       <description><![CDATA[]]></description>
       <pubDate>2015-08-19</pubDate>
       <guid>https://rudolfochrist.github.io/blog/2015/08/19/on-indexing-org-files</guid>
-    </item>
-    <item>
-      <title>README</title>
-      <link>https://rudolfochrist.github.io/blog/2015/08/17/readme/</link>
-      <description><![CDATA[]]></description>
-      <pubDate>2015-08-18</pubDate>
-      <guid>https://rudolfochrist.github.io/blog/2015/08/17/readme/</guid>
     </item>
     <item>
       <title>Summer Reading...</title>
