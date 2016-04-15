@@ -8,11 +8,12 @@
 #+OPTIONS:     H:3 num:nil toc:nil \n:nil ::t |:t ^:nil -:nil f:t *:t <:t
 #+DESCRIPTION: Add footnotes for Orgmode links when exported to LaTeX
 
-This is just a little Orgmode hack. If you use hyperlinks in Orgmode export the to LaTeX/PDF than there is no
-visual clue that a hyperlink exists. Unless you add =colorlinks=true= to your =hypersetup=. But there is still
-a problem if you print the PDF in black and white only. But [[http://orgmode.org/manual/Advanced-configuration.html#Advanced-configuration][Orgmnode Export Filters]] come to the rescue. 
+When you're using hyperlinks in Orgmode and export them to LaTeX/PDF, there aren't any visual clues that
+those links actually exists.  Unless you set =colorlinks=true= in your =hypersetup=. But even if you set
+=colorlinks=true= there is still a problem. When you print the PDF and keep it in black and white. [[http://orgmode.org/manual/Advanced-configuration.html#Advanced-configuration][Filters]]
+come to the rescue.
 
-#+BEGIN_SRC emacs-lisp
+#+Begin_SRC emacs-lisp
 (defvar org-export-latex-add-link-footnotes nil
   "If non-nil links will be added as footnotes if exported to latex.")
 
@@ -29,5 +30,5 @@ a problem if you print the PDF in black and white only. But [[http://orgmode.org
 #+END_SRC
 
 What =org-export-latex-link-footnote= does, is that it extracts the URL of a LaTeX =\href= and appends it as a
-=\footnote=. So the URL isn't lost after print. The footnote export process is only active if
-=org-export-latex-add-link-footnotes= is non-nil. I set this on a per document basis with =#+BIND=. 
+=\footnote=. So the URL isn't lost after the PDF has been printed. The footnote export process is only active if
+=org-export-latex-add-link-footnotes= is non-nil. I set this on a per document basis with =#+BIND=.
