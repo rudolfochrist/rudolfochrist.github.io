@@ -4,44 +4,51 @@
     <title>Sebastian Christ</title>
     <link>https://rudolfochrist.github.io</link>
     <description>(funcall (λ ()))</description>
-    <pubDate>Thu, 17 Sep 2015 17:17:06 CEST</pubDate>
-    <lastBuildDate>Thu, 17 Sep 2015 17:17:06 CEST</lastBuildDate>
+    <pubDate>Fri, 15 Apr 2016 20:38:49 CEST</pubDate>
+    <lastBuildDate>Fri, 15 Apr 2016 20:38:49 CEST</lastBuildDate>
     <docs>http://www.rssboard.org/rss-specification</docs>
     <generator>Org-page static site generator (https://github.com/kelvinh/org-page)</generator>
     <item>
-      <title>On trying something new</title>
-      <link>https://rudolfochrist.github.io/blog/2015/09/07/on-trying-something-new</link>
+      <title>First Post</title>
+      <link>https://rudolfochrist.github.io/blog/2015/02/27/first-post</link>
       <description><![CDATA[]]></description>
-      <pubDate>2015-09-07</pubDate>
-      <guid>https://rudolfochrist.github.io/blog/2015/09/07/on-trying-something-new</guid>
-    </item>
-    <item>
-      <title>On indexing org files</title>
-      <link>https://rudolfochrist.github.io/blog/2015/08/19/on-indexing-org-files</link>
-      <description><![CDATA[]]></description>
-      <pubDate>2015-08-19</pubDate>
-      <guid>https://rudolfochrist.github.io/blog/2015/08/19/on-indexing-org-files</guid>
-    </item>
-    <item>
-      <title>Summer Reading...</title>
-      <link>https://rudolfochrist.github.io/blog/2015/07/06/summer-reading</link>
-      <description><![CDATA[]]></description>
-      <pubDate>2015-07-06</pubDate>
-      <guid>https://rudolfochrist.github.io/blog/2015/07/06/summer-reading</guid>
+      <pubDate>2016-04-15</pubDate>
+      <guid>https://rudolfochrist.github.io/blog/2015/02/27/first-post</guid>
     </item>
     <item>
       <title>Offlineimap with SSL files on OSX</title>
       <link>https://rudolfochrist.github.io/blog/2015/03/21/offlineimap-with-ssl-files-on-osx</link>
       <description><![CDATA[]]></description>
-      <pubDate>2015-03-21</pubDate>
+      <pubDate>2016-04-15</pubDate>
       <guid>https://rudolfochrist.github.io/blog/2015/03/21/offlineimap-with-ssl-files-on-osx</guid>
     </item>
     <item>
-      <title>First Post</title>
-      <link>https://rudolfochrist.github.io/blog/2015/02/27/first-post</link>
+      <title>On Orgmode Links and LaTeX Footnotes</title>
+      <link>https://rudolfochrist.github.io/blog/2016/04/15/on-orgmode-links-and-latex-footnotes</link>
+      <description><![CDATA[Add footnotes for Orgmode links when exported to LaTeX]]></description>
+      <pubDate>2016-04-15</pubDate>
+      <guid>https://rudolfochrist.github.io/blog/2016/04/15/on-orgmode-links-and-latex-footnotes</guid>
+    </item>
+    <item>
+      <title>On indexing org files</title>
+      <link>https://rudolfochrist.github.io/blog/2015/08/19/on-indexing-org-files</link>
       <description><![CDATA[]]></description>
-      <pubDate>2015-02-27</pubDate>
-      <guid>https://rudolfochrist.github.io/blog/2015/02/27/first-post</guid>
+      <pubDate>2016-04-15</pubDate>
+      <guid>https://rudolfochrist.github.io/blog/2015/08/19/on-indexing-org-files</guid>
+    </item>
+    <item>
+      <title>On trying something new</title>
+      <link>https://rudolfochrist.github.io/blog/2015/09/07/on-trying-something-new</link>
+      <description><![CDATA[]]></description>
+      <pubDate>2016-04-15</pubDate>
+      <guid>https://rudolfochrist.github.io/blog/2015/09/07/on-trying-something-new</guid>
+    </item>
+    <item>
+      <title>Summer Reading...</title>
+      <link>https://rudolfochrist.github.io/blog/2015/07/06/summer-reading</link>
+      <description><![CDATA[]]></description>
+      <pubDate>2016-04-15</pubDate>
+      <guid>https://rudolfochrist.github.io/blog/2015/07/06/summer-reading</guid>
     </item>
   </channel>
 </rss>
