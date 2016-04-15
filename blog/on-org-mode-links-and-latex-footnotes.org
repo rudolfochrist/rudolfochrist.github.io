@@ -1,0 +1,33 @@
+#+TITLE:       On Orgmode Links and LaTeX Footnotes
+#+AUTHOR:      Sebastian Christ
+#+EMAIL:       rudolfo.christ@gmail.com
+#+DATE:        2016-04-15 Fri
+#+URI:         /blog/%y/%m/%d/on-orgmode-links-and-latex-footnotes
+#+KEYWORDS:    emacs,orgmode,latex
+#+LANGUAGE:    en
+#+OPTIONS:     H:3 num:nil toc:nil \n:nil ::t |:t ^:nil -:nil f:t *:t <:t
+#+DESCRIPTION: Add footnotes for Orgmode links when exported to LaTeX
+
+This is just a little Orgmode hack. If you use hyperlinks in Orgmode export the to LaTeX/PDF than there is no
+visual clue that a hyperlink exists. Unless you add =colorlinks=true= to your =hypersetup=. But there is still
+a problem if you print the PDF in black and white only. But [[http://orgmode.org/manual/Advanced-configuration.html#Advanced-configuration][Orgmnode Export Filters]] come to the rescue. 
+
+#+BEGIN_SRC emacs-lisp
+(defvar org-export-latex-add-link-footnotes nil
+  "If non-nil links will be added as footnotes if exported to latex.")
+
+(defun org-export-latex-link-footnote (text backend info)
+  "Create a footnote in latex for each link. So when printed the information isn't lost."
+  (when (and org-export-latex-add-link-footnotes
+             (org-export-derived-backend-p backend 'latex)
+             (string-match "\\\\href{\\(.*\\)}{\\(.*\\)}" text))
+    (when (some (lambda (type)
+                  (string-prefix-p type (match-string 1 text)))
+                '("http" "https" "ftp" "mailto" "doi"))
+      (format "%s \\footnote{\\url{%s}} " text (match-string 1 text)))))
+(add-to-list 'org-export-filter-link-functions #'org-export-latex-link-footnote)
+#+END_SRC
+
+What =org-export-latex-link-footnote= does, is that it extracts the URL of a LaTeX =\href= and appends it as a
+=\footnote=. So the URL isn't lost after print. The footnote export process is only active if
+=org-export-latex-add-link-footnotes= is non-nil. I set this on a per document basis with =#+BIND=. 
